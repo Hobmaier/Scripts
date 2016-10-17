@@ -1,4 +1,7 @@
+# V 1.1 Dennis Hobmaier
+# Add SP Module
 
+add-pssnapin microsoft.sharepoint.powershell -ea silentlycontinue 
 
 
 <# ============================================================== 
