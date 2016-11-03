@@ -3,8 +3,8 @@ param(
     [Parameter(Mandatory)][String] $CertName,
     [Parameter()][String] $TokenIssuerFriendlyName
 )
-#Source https://msdn.microsoft.com/en-us/library/office/dn579380.aspx
- 
+# Source: https://msdn.microsoft.com/en-us/library/office/dn579380.aspx
+
 # Stop if there's an error
 $ErrorActionPreference = "Stop"
 
@@ -40,7 +40,7 @@ else
 }
 
 # Register the token issuer
-New-SPTrustedSecurityTokenIssuer -Name $tokenIssuerName -Certificate $certificate -RegisteredIssuerName $fullIssuerIdentifier –IsTrustBroker
+New-SPTrustedSecurityTokenIssuer -Name $tokenIssuerName -Certificate $certificate -RegisteredIssuerName $fullIssuerIdentifier -IsTrustBroker
 
 # Output the specific issuer ID to a file in the same folder as this script. The file should be given to the developer of the high-trust SharePoint Add-in.
 $specificIssuerId | select * | Out-File -FilePath "SecureTokenIssuerID.txt"
