@@ -36,6 +36,7 @@ Get-SPOTenantCdnOrigins -CdnType Private
 
 #Remove CDN origin
 Remove-SPOTenantCdnOrigin -CdnType Public -OriginUrl */Publishingimages
+remove-SPOTenantCdnOrigin -CdnType Private -OriginUrl /sites/Publishing297/SalesDashboard
 
 #Disable CDN in the tenant
 Set-SPOTenantCdnEnabled -CdnType Public -Enable $false #up to 24h until cache expires
