@@ -50,7 +50,8 @@ add-pssnapin microsoft.sharepoint.powershell -ea silentlycontinue
  $srch4srvctr = 1 
  $srch5srvctr = 1 
 
-$srv4 = get-service "OSearch15" 
+ $SPVersion = (get-spfarm).buildversion.major
+$srv4 = get-service "OSearch$SPVersion" 
  $srv5 = get-service "SPSearchHostController" 
 
 If(($srv4.status -eq "Running") -or ($srv5.status-eq "Running")) 
@@ -87,7 +88,7 @@ Write-Host "Stopping Search Services if they are running" -foregroundcolor yello
  if($srv4.status -eq "Running") 
   { 
     $srch4srvctr = 2 
-    set-service -Name "OSearch15" -startuptype Disabled 
+    set-service -Name "OSearch$SPVersion" -startuptype Disabled 
     $srv4.stop() 
   } 
 
@@ -142,13 +143,17 @@ Write-Host "Services are Stopped" -ForegroundColor Green
  Write-Host 
  $starttime = Get-Date 
 
-$filename = $patchfile.basename     
+foreach ($patch in $patchfile) 
+{
+ 
+$filename = $patch.basename     
 
 Start-Process $filename 
 
 Start-Sleep -seconds 20 
  $proc = get-process $filename 
  $proc.WaitForExit() 
+}
 
 $finishtime = get-date 
  Write-Host 
@@ -172,13 +177,13 @@ $srv2 = get-service "SPTimerV4"
  $srv2.start() 
  $srv3 = get-service "IISADMIN" 
 $srv3.start() 
- $srv4 = get-service "OSearch15" 
+ $srv4 = get-service "OSearch$SPVersion" 
  $srv5 = get-service "SPSearchHostController" 
 
 ###Ensuring Search Services were stopped by script before Starting" 
  if($srch4srvctr -eq 2) 
  { 
-    set-service -Name "OSearch15" -startuptype Automatic 
+    set-service -Name "OSearch$SPVersion" -startuptype Automatic 
     $srv4.start() 
  } 
  if($srch5srvctr -eq 2) 
