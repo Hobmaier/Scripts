@@ -1,5 +1,5 @@
 #Change this line to your tenant URL prefix, e.g. in case abc.sharepoint.com it will be abc
-$tenant = 's2sshowcase'
+$tenant = 'mustermann'
 
 import-module microsoft.online.sharepoint.powershell
 get-command -Module Microsoft.Online.SharePoint.PowerShell
