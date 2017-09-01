@@ -1,5 +1,6 @@
-# V 1.1 Dennis Hobmaier
-# Add SP Module
+# V 1.2 Dennis Hobmaier
+# 1.1: Add SP Module
+# 1.2: Now compatible with SharePoint 2016
 
 add-pssnapin microsoft.sharepoint.powershell -ea silentlycontinue 
 
