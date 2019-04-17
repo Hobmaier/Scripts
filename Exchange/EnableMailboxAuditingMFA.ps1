@@ -3,6 +3,7 @@
 
 #https://docs.microsoft.com/en-us/powershell/exchange/exchange-online/connect-to-exchange-online-powershell/mfa-connect-to-exchange-online-powershell?view=exchange-ps
 Import-Module Microsoft.Exchange.Management.ExoPowershellModule -ErrorAction Stop
+# If needed run: Install-Module Microsoft.Exchange.Management.ExoPowershellModule
 $userUPN = Read-Host -Prompt "Please provide UserPrincipalName"
 $ExoSession = New-EXOPSSession -UserPrincipalName $userUPN
 Import-Pssession $ExoSession
