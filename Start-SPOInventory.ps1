@@ -1,5 +1,5 @@
 import-module Microsoft.Online.SharePoint.PowerShell -ErrorAction stop
-import-module sharepointpnppowershellonline
+import-module sharepointpnppowershellonline -ErrorAction Stop
 $tenant = Read-Host -Prompt "Please provide tenant name/domain"
 Connect-SPOService -url "https://$tenant-admin.sharepoint.com" -ErrorAction Stop
 Connect-pnponline -url "https://$tenant-admin.sharepoint.com" -UseWebLogin -ErrorAction Stop
