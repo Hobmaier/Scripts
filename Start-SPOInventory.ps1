@@ -20,6 +20,10 @@ foreach ($site in (Get-SPOSite -Limit All))
             {
                 "$($list.ParentWebUrl),$($list.Title),LIST,$($list.itemcount)" |out-file $logfile -append
             }
+            foreach ($Subweb in Get-PnPSubWebs -Recurse)
+            {
+                "$($Subweb.ServerRelativeUrl),$($Subweb.Title),SUBSITE,0" |out-file $logfile -append
+            }
         }
     }
     catch {
