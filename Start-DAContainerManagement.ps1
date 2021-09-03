@@ -64,11 +64,20 @@ param (
     #Define maximum number of Site Collections in container
     [Parameter(Mandatory=$false)]
     [int]
-    $ContainerSize = 15000
+    $ContainerSize = 15000,
+
+    # Optional - Log Directory
+    [Parameter(Mandatory=$false)]
+    [string]
+    $LogDir = 'Logs'    
 )
+
+# V 1.0     06/22/2021  Initial Release
+# V 1.1     09/02/2021  New: Optional parameter $LogDir
+
 $currentTime=Get-Date -Format 'yyyy-MM-dd_HH-mm-ss';
-$LogDir="Logs";
-$logName=$LogDir+"\Start-DAContainerManagement"+$currentTime+".log";
+$LogFileName = "Start-DAContainerManagement"+$currentTime+".log";
+$logName = Join-Path -Path $LogDir -ChildPath $LogFileName;
 # Requires DocAve PowerShell to be installed on the systems running this script
 # Import DocAve Module / PowerShell
 import-module DocAveModule -ErrorAction Stop
