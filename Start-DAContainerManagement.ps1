@@ -74,6 +74,7 @@ param (
 
 # V 1.0     06/22/2021  Initial Release
 # V 1.1     09/02/2021  New: Optional parameter $LogDir
+# V 1.2     11/12/2021  New: Output of Logfile will be formatted as UTF8
 
 $currentTime=Get-Date -Format 'yyyy-MM-dd_HH-mm-ss';
 $LogFileName = "Start-DAContainerManagement"+$currentTime+".log";
@@ -251,7 +252,7 @@ function OutputToLog($str)
 {
     $dateTime=Get-Date -Format 'yyyy-MM-dd HH:mm:ss';
 	$message=$dateTime+" "+$str;
-    $message | Out-File -Append -filepath $logName;
+    $message | Out-File -Append -filepath $logName -Encoding utf8;
 }
 
 
