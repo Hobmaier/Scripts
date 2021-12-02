@@ -75,6 +75,7 @@ param (
 # V 1.0     06/22/2021  Initial Release
 # V 1.1     09/02/2021  New: Optional parameter $LogDir
 # V 1.2     11/12/2021  New: Output of Logfile will be formatted as UTF8
+# V 1.3     12/02/2021  New: Exclude tenant-my.sharepoint.com OneDrive Root.
 
 $currentTime=Get-Date -Format 'yyyy-MM-dd_HH-mm-ss';
 $LogFileName = "Start-DAContainerManagement"+$currentTime+".log";
@@ -126,40 +127,44 @@ function Main {
                 
                 foreach ($Site in $SourceContainer.Sites)
                 {
-                    OutputToHostAndLog 'Load containers'
-                    #Performance might be better if running next line outside of this loop
-                    #But needs to determine amount of sites available within container to stay within the limits of 15.000
-                    $Containers = Get-DASPOnlineSitesGroup
-                    OutputToHostAndLog "Containers count: $($Containers.count)"                    
-                    #Rebalance into new Container
-                    #Find a container with remaining capacity
-                    $ContainerFound = $false
-                    foreach ($Container in $Containers) {
-                        If(($Container.Sites.Count -le $ContainerSize) -and ($Container.Name -ne $SourceContainer.Name) -and ($Container.GroupType -eq $SourceContainer.GroupType) -and ($ContainerFound -eq $false) -and ($Container.Name -like "$ContainerPreFix*" ))
-                        {
-                            #Determine size of container
-                            #$i = $Container.Count - $ContainerSize
+                    #New: Don't touch MySite Host, this is always part of SPO group and would result in an error
+                    If(!$Site.URL.EndsWith("-my.sharepoint.com"))
+                    {
+                        OutputToHostAndLog 'Load containers'
+                        #Performance might be better if running next line outside of this loop
+                        #But needs to determine amount of sites available within container to stay within the limits of 15.000
+                        $Containers = Get-DASPOnlineSitesGroup
+                        OutputToHostAndLog "Containers count: $($Containers.count)"                    
+                        #Rebalance into new Container
+                        #Find a container with remaining capacity
+                        $ContainerFound = $false
+                        foreach ($Container in $Containers) {
+                            If(($Container.Sites.Count -le $ContainerSize) -and ($Container.Name -ne $SourceContainer.Name) -and ($Container.GroupType -eq $SourceContainer.GroupType) -and ($ContainerFound -eq $false) -and ($Container.Name -like "$ContainerPreFix*" ))
+                            {
+                                #Determine size of container
+                                #$i = $Container.Count - $ContainerSize
+
+                                #Add Site Collections
+                                Remove-DASiteFromContainer -ContainerName $SourceContainer.Name -SiteCollectionURL $Site.URL
+                                Add-DASiteToContainer -ContainerName $Container.Name -SiteCollectionURL $Site.URL -AppManagementProfile $AppProfile
+                                $ContainerFound = $true
+                            }
+        
+                        }   
+                        If ($ContainerFound -eq $false) {
+                            #CreateContainer and put Site Collection into it
+                            $TodaysDate = Get-Date -Format 'yyyy-MM-dd hh:mm'
+
+
+                            $NewContainerName = "$($ContainerPreFix)_$($TodaysDate)"
+                            OutputToHostAndLog "Create container [$($NewContainerName)]"
+                            $CreatedContainer = New-DAContainer -ContainerName $NewContainerName -GroupType $SourceContainer.GroupType
 
                             #Add Site Collections
                             Remove-DASiteFromContainer -ContainerName $SourceContainer.Name -SiteCollectionURL $Site.URL
-                            Add-DASiteToContainer -ContainerName $Container.Name -SiteCollectionURL $Site.URL -AppManagementProfile $AppProfile
-                            $ContainerFound = $true
+                            Add-DASiteToContainer -ContainerName $CreatedContainer.Name -SiteCollectionURL $Site.URL -AppManagementProfile $AppProfile 
+                            
                         }
-    
-                    }   
-                    If ($ContainerFound -eq $false) {
-                        #CreateContainer and put Site Collection into it
-                        $TodaysDate = Get-Date -Format 'yyyy-MM-dd hh:mm'
-
-
-                        $NewContainerName = "$($ContainerPreFix)_$($TodaysDate)"
-                        OutputToHostAndLog "Create container [$($NewContainerName)]"
-                        $CreatedContainer = New-DAContainer -ContainerName $NewContainerName -GroupType $SourceContainer.GroupType
-
-                        #Add Site Collections
-                        Remove-DASiteFromContainer -ContainerName $SourceContainer.Name -SiteCollectionURL $Site.URL
-                        Add-DASiteToContainer -ContainerName $CreatedContainer.Name -SiteCollectionURL $Site.URL -AppManagementProfile $AppProfile 
-                        
                     }
                 }
             }
