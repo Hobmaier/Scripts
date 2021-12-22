@@ -29,7 +29,7 @@ param (
     $TenantURL
 )
 
-import-module Microsoft.Online.SharePoint.PowerShell -ErrorAction stop
+#import-module Microsoft.Online.SharePoint.PowerShell -ErrorAction stop
 import-module PnP.PowerShell -ErrorAction Stop
 If(!$TenantURL)
 {
@@ -42,9 +42,9 @@ If(!$TenantURL)
 }
 $Logfile = ".\InventorySharingForNonOwnersOfSite.csv"
 #Header
-'URL,Title,PnPSharingForNonOwnersOfSite' | Out-File $Logfile
+'URL,Title,PnPSharingForNonOwnersOfSite,SharingCapability,SiteDefinedSharingCapability' | Out-File $Logfile
 
-foreach ($site in (Get-PnPTenantSite))
+foreach ($site in (Get-PnPTenantSite -IncludeOneDriveSites))
 {
     Write-Output "Connect to $($Site.Url)"
     
@@ -57,7 +57,8 @@ foreach ($site in (Get-PnPTenantSite))
     try {
         if (Get-PnPSite)
         {
-            "$($Site.Url),$($site.Title),$(Get-PnPSharingForNonOwnersOfSite)" | Out-file $Logfile -Append
+            $TenantSite = Get-PnPTenantSite -Identity $site.Url
+            "$($Site.Url),$($site.Title),$(Get-PnPSharingForNonOwnersOfSite),$($TenantSite.SharingCapability),$($TenantSite.SiteDefinedSharingCapability)" | Out-file $Logfile -Append
             foreach ($Subweb in Get-PnPSubWeb -Recurse)
             {
                 "$($Subweb.ServerRelativeUrl),$($Subweb.Title),$(Get-PnPSharingForNonOwnersOfSite)" |out-file $logfile -append
@@ -69,3 +70,5 @@ foreach ($site in (Get-PnPTenantSite))
         "$($site.Url),$($site.Title),ERROR" | out-file $logfile -Append
     }
 }
+
+Disconnect-PnPOnline
