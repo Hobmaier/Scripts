@@ -26,7 +26,9 @@ param (
         Mandatory=$false
     )]
     [string]       
-    $TenantURL
+    $TenantURL,
+
+    $Logfile = ".\InventorySharingForNonOwnersOfSite.csv"
 )
 
 #import-module Microsoft.Online.SharePoint.PowerShell -ErrorAction stop
@@ -40,9 +42,9 @@ If(!$TenantURL)
     #Connect-SPOService -url $TenantURL -ErrorAction Stop
     Connect-pnponline -url $TenantURL -ClientId $ClientId -Thumbprint $Thumbprint -Tenant $TenantID -ErrorAction Stop
 }
-$Logfile = ".\InventorySharingForNonOwnersOfSite.csv"
+
 #Header
-'URL,Title,PnPSharingForNonOwnersOfSite,SharingCapability,SiteDefinedSharingCapability' | Out-File $Logfile
+'URL;Title;PnPSharingForNonOwnersOfSite;SharingCapability;SiteDefinedSharingCapability' | Out-File $Logfile
 
 foreach ($site in (Get-PnPTenantSite -IncludeOneDriveSites))
 {
@@ -58,16 +60,16 @@ foreach ($site in (Get-PnPTenantSite -IncludeOneDriveSites))
         if (Get-PnPSite)
         {
             $TenantSite = Get-PnPTenantSite -Identity $site.Url
-            "$($Site.Url),$($site.Title),$(Get-PnPSharingForNonOwnersOfSite),$($TenantSite.SharingCapability),$($TenantSite.SiteDefinedSharingCapability)" | Out-file $Logfile -Append
+            "$($Site.Url);$($site.Title);$(Get-PnPSharingForNonOwnersOfSite);$($TenantSite.SharingCapability);$($TenantSite.SiteDefinedSharingCapability)" | Out-file $Logfile -Append
             foreach ($Subweb in Get-PnPSubWeb -Recurse)
             {
-                "$($Subweb.ServerRelativeUrl),$($Subweb.Title),$(Get-PnPSharingForNonOwnersOfSite)" |out-file $logfile -append
+                "$($Subweb.ServerRelativeUrl);$($Subweb.Title);$(Get-PnPSharingForNonOwnersOfSite)" |out-file $logfile -append
             }
         }
     }
     catch {
         Write-Output "...Error"
-        "$($site.Url),$($site.Title),ERROR" | out-file $logfile -Append
+        "$($site.Url);$($site.Title);ERROR" | out-file $logfile -Append
     }
 }
 
