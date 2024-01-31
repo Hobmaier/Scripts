@@ -7,7 +7,7 @@
     one container to avoid performance problems.
 .EXAMPLE
     $cred = get-Credential
-    Start-DAContainerManagement -ControlHost "DocAveServer" -Username $cred.username -Password $cred.password
+    Get-DAContainerSize -ControlHost "DocAveServer" -Username $cred.username -Password $cred.password
 .COMPONENT
     AvePoint Cloud Records
 #>
