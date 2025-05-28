@@ -7,8 +7,8 @@
     This script collect information (Id, size, location) about VMs, allocated storage for Managed Disks, SQL and consumed storage for Storage Accounts. It will create a export file Start-DiscoverSubscriptionResources.csv
 
 .EXAMPLE
-    Install-VMDPSModule.ps1
-    This will install the PowerShell module into users PowerShell directory
+    .\Start-DiscoverSubscriptionResources.ps1
+    This will import Az module, connect and get all subscriptions, vms, disks, sql databases and storage accounts. It will export storage information to CSV.
 
 #> 
 
