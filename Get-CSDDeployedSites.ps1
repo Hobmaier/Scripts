@@ -27,7 +27,7 @@
 .PARAMETER Interactive
   Use interactive auth (recommended; requires PnP Management Shell app consent). If not specified, certificate auth is used.
 
-.PARAMETER TenantName
+.PARAMETER TenantID
   Your tenant (e.g., contoso.onmicrosoft.com). Required for app-only auth.
 
 .PARAMETER ClientId
@@ -72,7 +72,7 @@ param (
 	
 	# App-only parameters (used when -Interactive is NOT specified)
 	[Parameter(Mandatory = $false)]
-    [string]$TenantName,       # e.g., contoso.onmicrosoft.com
+    [string]$TenantID,       # e.g., contoso.onmicrosoft.com // Changed to TenantID works as well
     [string]$Thumbprint,
     [string]$CertificatePath,
     [SecureString]$CertificatePassword,
@@ -102,14 +102,14 @@ begin {
 
         }
         else {
-            if (-not $TenantName -or -not $ClientId -or (-not $Thumbprint -and -not $CertificatePath)) {
-                throw "For app-only auth, specify -TenantName, -ClientId and either -Thumbprint or -CertificatePath (+ -CertificatePassword)."
+            if (-not $TenantID -or -not $ClientId -or (-not $Thumbprint -and -not $CertificatePath)) {
+                throw "For app-only auth, specify -TenantID, -ClientId and either -Thumbprint or -CertificatePath (+ -CertificatePassword)."
             }
             if ($Thumbprint) {
-                return (Connect-PnPOnline -Url $Url -ClientId $ClientId -Thumbprint $Thumbprint -Tenant $TenantName -ReturnConnection)
+                return (Connect-PnPOnline -Url $Url -ClientId $ClientId -Thumbprint $Thumbprint -Tenant $TenantID -ReturnConnection)
             }
             else {
-                return (Connect-PnPOnline -Url $Url -ClientId $ClientId -CertificatePath $CertificatePath -CertificatePassword $CertificatePassword -Tenant $TenantName -ReturnConnection)
+                return (Connect-PnPOnline -Url $Url -ClientId $ClientId -CertificatePath $CertificatePath -CertificatePassword $CertificatePassword -Tenant $TenantID -ReturnConnection)
             }
         }
     }
@@ -123,10 +123,10 @@ begin {
         }
         else {
             if ($Thumbprint) {
-                return (Connect-PnPOnline -Url $Url -ClientId $ClientId -Thumbprint $Thumbprint -Tenant $TenantName -ReturnConnection)
+                return (Connect-PnPOnline -Url $Url -ClientId $ClientId -Thumbprint $Thumbprint -Tenant $TenantID -ReturnConnection)
             }
             else {
-                return (Connect-PnPOnline -Url $Url -ClientId $ClientId -CertificatePath $CertificatePath -CertificatePassword $CertificatePassword -Tenant $TenantName -ReturnConnection)
+                return (Connect-PnPOnline -Url $Url -ClientId $ClientId -CertificatePath $CertificatePath -CertificatePassword $CertificatePassword -Tenant $TenantID -ReturnConnection)
             }
         }
     }
@@ -223,7 +223,11 @@ process {
         Write-Error "Failed during tenant enumeration or scanning. $_"
     }
     finally {
-        if ($adminConn) { Disconnect-PnPOnline -ErrorAction SilentlyContinue }
+        if ($adminConn) { 
+            #Not supported any longer
+            #Disconnect-PnPOnline -ErrorAction SilentlyContinue 
+            $adminConn = $null
+        }
         $sw.Stop()
         Write-Host ("Elapsed: {0:c}" -f $sw.Elapsed)
     }
