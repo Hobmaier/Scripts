@@ -46,7 +46,7 @@ param (
     [switch]$Simulate,
 	
 	[Parameter(Mandatory = $false, HelpMessage = "List of library titles to explicitly ignore.")]
-    [string[]]$ExcludedLibraries = @("Form Templates", "Site Assets", "Style Library", "Site Pages", "Preservation Hold Library")	
+    [string[]]$ExcludedLibraries = @("Form Templates", "Site Assets", "Style Library", "Site Pages", "Preservation Hold Library","Websiteobjekte","Formatbibliothek")	
 )
 
 $ErrorActionPreference = "Stop"
@@ -119,6 +119,7 @@ foreach ($site in $sites) {
 						$conditionA = $lib.EnableVersioning -eq $true
 						$conditionB = $lib.EnableMinorVersions -eq $false
 						$conditionC = ($lib.MajorVersionLimit -eq 0 -or $lib.MajorVersionLimit -eq 500)
+						
 
 						if ($conditionA -and $conditionB -and $conditionC) {
 							
